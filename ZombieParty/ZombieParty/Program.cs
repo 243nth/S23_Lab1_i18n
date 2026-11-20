@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ZombieParty.Models;
 using ZombieParty.Models.Data;
 
@@ -20,8 +21,9 @@ CultureInfo[] supportedCultures = new[]
 #endregion
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -35,6 +37,9 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 
 
 var app = builder.Build();
+
+var locOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(locOptions.Value);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
