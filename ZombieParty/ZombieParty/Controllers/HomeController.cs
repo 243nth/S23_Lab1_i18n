@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using ZombieParty.Models;
 
 namespace ZombieParty.Controllers
@@ -28,5 +29,29 @@ namespace ZombieParty.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpPost]
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            var cookie = CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture));
+            var name = CookieRequestCultureProvider.DefaultCookieName;
+
+            Response.Cookies.Append(name, cookie, new CookieOptions
+            {
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+            });
+
+            return LocalRedirect(returnUrl);
+        }
+
+
+
+
+
+
+
+
+
     }
 }
